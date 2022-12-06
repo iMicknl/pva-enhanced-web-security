@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Contoso Sample Web Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <script src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
+
+    <!-- This styling is for the canvas demonstration purposes. It is recommended 
+    that style is moved to separate file for organization in larger projects -->
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        #header {
+            background-color: rgb(11, 85, 106);
+            color: rgb(255, 255, 255);
+            font-weight: 600;
+            height: 48px;
+            padding: 0px 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #subheader {
+            background-color: rgb(243, 242, 241);
+            padding: 7px 13px;
+            font-size: 12px;
+            font-weight: 400;
+        }
+
+        a {
+            color: rgb(0, 90, 158);
+        }
+
+        a:hover {
+            color: rgb(0, 69, 120);
+        }
+
+        #webchat {
+            position: fixed;
+            height: calc(100% - 75px);
+            width: 100%;
+            top: 75px;
+            overflow: hidden;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="chatwindow">
+        <div id="header">
+            Enhanced Security Bot
+        </div>
+        <div id="subheader">
+            <span>This chatbot is using <a
+                    href="https://learn.microsoft.com/en-us/power-virtual-agents/configure-web-security"
+                    target="_blank">enhanced webchannel security</a>, which requires a (conversation) token that can be
+                retrieved from a (secured) API. In this example, this custom API can only be accessed after succesfull <a href="/login">login via GitHub</a>.
+            </span>
+        </div>
+
+        <div id="webchat"> </div>
+    </div>
+
+    <script>
+        // TODO Change parameters below to your token endpoint.
+        const tokenEndpoint = "/api/GetConversationToken"
+    </script>
+
+    <script>
+            (async function () {
+                const res = await fetch(tokenEndpoint, { method: 'GET' });
+                const { token } = await res.json();
+                const directLine = window.WebChat.createDirectLine({ token });
+
+                // https://learn.microsoft.com/en-us/power-virtual-agents/configure-bot-greeting
+                const store = window.WebChat.createStore(
+                    {},
+                    ({ dispatch }) => next => action => {
+                        if (action.type === "DIRECT_LINE/CONNECT_FULFILLED") {
+                            dispatch({
+                                meta: {
+                                    method: "keyboard",
+                                },
+                                payload: {
+                                    activity: {
+                                        channelData: {
+                                            postBack: true,
+                                        },
+                                        //Web Chat will show the 'Greeting' System Topic message which has a trigger-phrase 'hello'
+                                        name: 'startConversation',
+                                        type: "event"
+                                    },
+                                },
+                                type: "DIRECT_LINE/POST_ACTIVITY",
+                            });
+                        }
+                        return next(action);
+                    }
+                );
+
+                const styleOptions = {
+                    // Add styleOptions to customize Web Chat canvas
+                    hideUploadButton: true,
+                    botAvatarImage: 'https://bot-framework.azureedge.net/bot-icons-v1/6ab9b101-b65c-4357-9e9f-915cbf313a14_2K5Bt02aW8egEb97fxAgh7vqChK4UV3Nh3Lw3YYArhEKR8mB.png',
+                    botAvatarInitials: 'Bot',
+                    userAvatarImage: 'https://content.powerapps.com/resource/makerx/static/media/user.0d06c38a.svg',
+                    userAvatarInitials: 'User'
+                };
+
+                window.WebChat.renderWebChat(
+                    {
+                        directLine: directLine,
+                        store,
+                        styleOptions
+                    },
+                    document.getElementById('webchat')
+                );
+
+                document.querySelector('#webchat > *').focus();
+            })().catch(err => console.error(err));
+    </script>
+</body>
+
+</html>
