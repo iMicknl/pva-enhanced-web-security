@@ -6,7 +6,8 @@ This will stop other websites from being able to embed your chatbot, since they 
 
 ## Code
 [app](./app/) - frontend which loads a custom webchat canvas
-[api](./api/) - backend API which can generate a token
+
+[api](./api/) - C# backend API which can generate a token
 
 ## Demo
 https://gray-plant-084f3ab03.2.azurestaticapps.net/
