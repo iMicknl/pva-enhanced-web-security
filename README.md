@@ -4,6 +4,10 @@ In this example, we host a webchat canvas on Azure Static WebApps. The Power Vir
 
 This will stop other websites from being able to embed your chatbot, since they can't access your token API. You can secure your token API with an authentication provider, limit it to certain IP-addresses or only allow access in your corporate network (VNET).
 
+## Code
+[app](./app/) - frontend which loads a custom webchat canvas
+[api](./api/) - backend API which can generate a token
+
 ## Demo
 https://gray-plant-084f3ab03.2.azurestaticapps.net/
 
